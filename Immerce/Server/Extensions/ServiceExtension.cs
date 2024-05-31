@@ -1,4 +1,5 @@
 ﻿using Immerce.Server.Data;
+using Immerce.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Immerce.Server.Extensions
@@ -11,6 +12,15 @@ namespace Immerce.Server.Extensions
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+        }
+
+        /// <summary>
+        /// Dependencies registration method
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureServicesDependencies(this IServiceCollection services)
+        {
+            services.AddScoped<IProductService, ProductService>();
         }
     }
 }

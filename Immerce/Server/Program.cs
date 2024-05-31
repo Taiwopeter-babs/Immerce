@@ -11,6 +11,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.ConfigureServicesDependencies();
+
 var app = builder.Build();
 
 app.UseSwaggerUI();

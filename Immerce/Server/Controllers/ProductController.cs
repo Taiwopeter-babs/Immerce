@@ -1,4 +1,5 @@
 ﻿using Immerce.Server.Data;
+using Immerce.Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,18 +10,27 @@ namespace Immerce.Server.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private DatabaseContext _dbContext;
-        public ProductController(DatabaseContext dbContext) 
+        private readonly IProductService _productService;
+        public ProductController(IProductService productService) 
         {
-            _dbContext = dbContext;
+            _productService = productService;
         }
         
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>?>> GetProducts()
+        public async Task<ActionResult<ServiceResponse<List<Product>>?>> GetProducts()
         {
-            var products = await _dbContext.Products.ToListAsync();
-            return Ok(products);
+            var response = await _productService.GetProductsAsync();
+
+            return Ok(response);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ServiceResponse<Product?>>> GetProduct(int id)
+        {
+            var response = await _productService.GetProductAsync(id);
+
+            return Ok(response);
         }
     }
 }

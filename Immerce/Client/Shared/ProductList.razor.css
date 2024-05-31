@@ -15,28 +15,3 @@
     width: 200px;
     text-align: center;
 }
-
-.price {
-    color: green;
-}
-
-.media {
-    display: flex;
-    align-items: flex-start;
-}
-
-.media-body {
-    flex: 1;
-}
-
-
-@media (max-width: 1024px) {
-    .media {
-        flex-direction: column;
-    }
-
-    .media-img-wrapper {
-        width: 100%;
-        height: auto;
-    }
-}

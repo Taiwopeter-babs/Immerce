@@ -38,5 +38,19 @@ namespace Immerce.Server.Services
 
             return response;
         }
+
+        public async Task<ServiceResponse<List<Product>>> GetProductsByCategoryAsync(string categoryUrl)
+        {
+            var products = await _dbContext.Products
+                    .Where(pr => pr.Category != null && pr.Category.Url!.Equals(categoryUrl))
+                    .ToListAsync();
+
+            var response = new ServiceResponse<List<Product>>()
+            {
+                Data = products
+            };
+
+            return response;
+        }
     }
 }

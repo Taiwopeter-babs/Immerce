@@ -1,14 +1,11 @@
 ﻿@inject IProductService ProductService
+@implements IDisposable
 
 <h3>Products</h3>
 
-@if (ProductService.Products is null)
+@if (ProductService.Products.Count == 0)
 {
     <p><em>Loading Products...</em></p>
-}
-else if (ProductService.Products != null && ProductService.Products.Count == 0)
-{
-    <p><em>No Products</em></p>
 }
 else
 {
@@ -39,9 +36,25 @@ else
 
 @code {
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await ProductService.GetProducts();
-
+        ProductService.ProductsChanged += ProductChangedHandler!;
     }
+
+    public void Dispose()
+    {
+        ProductService.ProductsChanged -= ProductChangedHandler!;
+    }
+
+    /// <summary>
+    /// Event handler for re-rendering ProductList component
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public async void ProductChangedHandler(object sender, EventArgs e)
+    {
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    
 }

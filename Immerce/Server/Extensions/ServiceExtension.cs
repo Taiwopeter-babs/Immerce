@@ -21,6 +21,7 @@ namespace Immerce.Server.Extensions
         public static void ConfigureServicesDependencies(this IServiceCollection services)
         {
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
         }
     }
 }

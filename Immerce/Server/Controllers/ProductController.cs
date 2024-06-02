@@ -32,5 +32,13 @@ namespace Immerce.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("{categoryUrl}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>?>> GetProductsByCategoory(string categoryUrl)
+        {
+            var response = await _productService.GetProductsByCategoryAsync(categoryUrl);
+
+            return Ok(response);
+        }
     }
 }

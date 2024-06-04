@@ -20,7 +20,31 @@ else
             <h3 class="mb-0">@product.Title</h3>
         </a>
         <p>@product.Description</p>
-        <h4 class="price">$@product.Price</h4>
+        
+        @if (product.Variants != null && product.Variants.Count > 1)
+        {
+            <div class="mb-3">
+                <label for="productVariant" class="form-label">Select product variant:</label>
+                <select class="form-select form-select-sm mb-3" @bind="currentTypeId">
+                    @foreach (var variant in product.Variants)
+                    {
+                        <option value="@variant.ProductTypeId">@variant.ProductType?.Name</option>
+                    }
+                </select>
+            </div>
+            
+        }
+
+
+        @if (selectedVariant != null)
+        {
+            if (selectedVariant.OriginalPrice > selectedVariant.Price)
+            {
+                <h6 class="text-muted original-price">$@selectedVariant.OriginalPrice</h6>
+            }
+            <h4 class="price">$@selectedVariant.Price</h4>
+        }
+            
       </div>
   </div>
 }
@@ -36,6 +60,13 @@ else
 
     private string Message = string.Empty;
 
+    /// <summary>
+    /// Default product type id
+    /// </summary>
+    private int currentTypeId = 1;
+
+    
+
     protected override async Task OnParametersSetAsync()
     {
         var response = await ProductService.GetProduct(Id);
@@ -43,5 +74,22 @@ else
         Message = response!.Success ? "Loading product..." : response.Message;
 
         product = response!.Data;
+
+        var variants = product?.Variants;
+
+        if (variants!.Count > 0)
+        {
+            // pick the first product type
+            currentTypeId = variants[0].ProductTypeId;
+        }
+
     }
+
+    private ProductVariant? GetSelectedVariant()
+    {
+        return product?.Variants.FirstOrDefault(pv => pv.ProductTypeId == currentTypeId);
+
+    }
+
+    public ProductVariant? selectedVariant => GetSelectedVariant();
 }

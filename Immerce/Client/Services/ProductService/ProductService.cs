@@ -20,7 +20,7 @@ namespace Immerce.Client.Services
         /// <summary>
         /// Event for monitoring the parameter change to navigate products by categoryUrl
         /// </summary>
-        public event EventHandler? ProductsChanged;
+        public event EventHandler? ProductsListUrlChanged;
 
         public async Task<ServiceResponse<Product>?> GetProduct(int id)
         {
@@ -31,16 +31,15 @@ namespace Immerce.Client.Services
 
         public async Task GetProducts(string? categoryUrl = null)
         {
+            string apiUrl = categoryUrl == null ? "api/v1/products" : $"api/v1/products/{categoryUrl}";
 
-            var response = categoryUrl == null
-                    ? await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/v1/products")
-                    : await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/v1/products/{categoryUrl}");
+            var response = await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>(apiUrl);
 
             if (response != null && response.Data != null)
                 Products = response.Data;
 
             /// Invoke event handler
-            ProductsChanged?.Invoke(this, EventArgs.Empty);
+            ProductsListUrlChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -15,7 +15,10 @@ namespace Immerce.Server.Services
 
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
-            Product? product = await _dbContext.Products.FindAsync(id);
+            Product? product = await _dbContext.Products
+                    .Include(pr => pr.Variants)
+                    .ThenInclude(variant => variant.ProductType)
+                    .FirstOrDefaultAsync(pr => pr.Id == id);
 
             var response = new ServiceResponse<Product>()
             {
@@ -29,7 +32,9 @@ namespace Immerce.Server.Services
 
         public  async Task<ServiceResponse<List<Product>>> GetProductsAsync()
         {
-            var products = await _dbContext.Products.ToListAsync();
+            var products = await _dbContext.Products
+                    .Include(pr => pr.Variants)
+                    .ToListAsync();
 
             var response = new ServiceResponse<List<Product>>()
             {
@@ -43,6 +48,7 @@ namespace Immerce.Server.Services
         {
             var products = await _dbContext.Products
                     .Where(pr => pr.Category != null && pr.Category.Url!.Equals(categoryUrl))
+                    .Include(pr => pr.Variants)
                     .ToListAsync();
 
             var response = new ServiceResponse<List<Product>>()

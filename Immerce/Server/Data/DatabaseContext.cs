@@ -13,6 +13,9 @@ namespace Immerce.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Set case insensitive collation
+            //modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
+
             // Composite key for product variant
             modelBuilder.Entity<ProductVariant>()
                 .HasKey(pv => new { pv.ProductId, pv.ProductTypeId });

@@ -61,17 +61,25 @@ else
     private string Message = string.Empty;
 
     /// <summary>
-    /// Default product type id
+    /// Default product type id. This determines which price is shown depending
+    /// on the product variant.
     /// </summary>
     private int currentTypeId = 1;
 
-    
+
 
     protected override async Task OnParametersSetAsync()
     {
         var response = await ProductService.GetProduct(Id);
 
-        Message = response!.Success ? "Loading product..." : response.Message;
+        if (response == null)
+        {
+            Message = "No product found";
+        }
+        else
+        {
+            Message = response.Success ? "Loading product..." : response.Message;
+        }  
 
         product = response!.Data;
 
@@ -79,7 +87,7 @@ else
 
         if (variants!.Count > 0)
         {
-            // pick the first product type
+            // pick the first product type as the selected
             currentTypeId = variants[0].ProductTypeId;
         }
 
@@ -91,5 +99,9 @@ else
 
     }
 
+    /// <summary>
+    /// The selected variant in the dropdown menu. If there are no variants,
+    /// the default is the only one available
+    /// </summary>
     public ProductVariant? selectedVariant => GetSelectedVariant();
 }

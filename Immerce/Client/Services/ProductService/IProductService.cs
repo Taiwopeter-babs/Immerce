@@ -9,13 +9,25 @@ namespace Immerce.Client.Services
         /// on the page to get products by <b>categoryUrl</b>
         /// </summary>
         event EventHandler? ProductsListUrlChanged;
-        Task GetProducts(string? categoryUrl = null);
-
-        Task<ServiceResponse<Product>?> GetProduct(int id);
 
         /// <summary>
         /// Public property to access all products
         /// </summary>
         List<Product> Products { get; set; }
+
+        /// <summary>
+        /// Notifier for product search result
+        /// </summary>
+        string Message { get; set; }
+
+        Task GetProducts(string? categoryUrl = null);
+
+        Task<ServiceResponse<Product?>> GetProduct(int id);
+
+        Task SearchProducts(string? searchString = null);
+
+        Task<List<string>?> GetProductsSuggestions(string? searchString = null);
+
+
     }
 }

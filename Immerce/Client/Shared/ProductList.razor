@@ -5,7 +5,7 @@
 
 @if (ProductService.Products.Count == 0)
 {
-    <p><em>Loading Products...</em></p>
+    <p><em>@ProductService.Message</em></p>
 }
 else
 {
@@ -38,13 +38,13 @@ else
     protected override void OnInitialized()
     {
         // Add event handler
-        ProductService.ProductsListUrlChanged += ProductsChangedHandler!;
+        ProductService.ProductsListUrlChanged += HandleProductsChanged!;
     }
 
     public void Dispose()
     {
         // remove event handler
-        ProductService.ProductsListUrlChanged -= ProductsChangedHandler!;
+        ProductService.ProductsListUrlChanged -= HandleProductsChanged!;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ else
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public async void ProductsChangedHandler(object sender, EventArgs e)
+    public async void HandleProductsChanged(object sender, EventArgs e)
     {
         await InvokeAsync(() => StateHasChanged());
     }

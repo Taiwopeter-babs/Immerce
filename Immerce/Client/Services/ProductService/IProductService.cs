@@ -2,6 +2,9 @@
 
 namespace Immerce.Client.Services
 {
+    /// <summary>
+    /// Product service interface for client interaction
+    /// </summary>
     public interface IProductService
     {
         /// <summary>

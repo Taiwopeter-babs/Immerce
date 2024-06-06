@@ -35,7 +35,9 @@ namespace Immerce.Client.Services
 
         public async Task GetProducts(string? categoryUrl = null)
         {
-            string apiUrl = categoryUrl == null ? "api/v1/products" : $"api/v1/products/{categoryUrl}";
+            string apiUrl = categoryUrl == null
+                    ? "api/v1/products/featured"
+                    : $"api/v1/products/{categoryUrl}";
 
             var response = await QueryApiAsync<ServiceResponse<List<Product>>>(apiUrl);
 

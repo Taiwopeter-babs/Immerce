@@ -1,6 +1,4 @@
-﻿using Immerce.Server.Data;
-using Immerce.Server.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Immerce.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,6 +52,14 @@ namespace Immerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<string>>>> GetProductsSuggestions([FromQuery] string? searchString)
         {
             var response = await _productService.GetProductsSuggestions(searchString);
+
+            return Ok(response);
+        }
+
+        [HttpGet("featured")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
+        {
+            var response = await _productService.GetFeaturedProducts();
 
             return Ok(response);
         }

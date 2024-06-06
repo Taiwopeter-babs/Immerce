@@ -1,0 +1,20 @@
+﻿a {
+    text-decoration: none;
+    font-size: 20px;
+    background: linear-gradient(135deg, #063B23, #E3E3E3);
+    
+    background: linear-gradient(135deg, #063B23, #8F7983);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.home-button {
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.home-button:hover {
+    cursor: pointer;
+}

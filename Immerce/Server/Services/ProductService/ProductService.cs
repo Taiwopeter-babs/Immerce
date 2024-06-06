@@ -14,6 +14,13 @@ namespace Immerce.Server.Services
             _dbContext = dbContext;
         }
 
+        public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
+        {
+            var products = await FindProductsByCondition(p => p.Featured);
+
+            return new ServiceResponse<List<Product>> { Data = products };
+        }
+
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
             Product? product = await _dbContext.Products
@@ -106,7 +113,7 @@ namespace Immerce.Server.Services
 
             }
 
-            return new ServiceResponse<List<string>> { Data = result.ToList() };      
+            return new ServiceResponse<List<string>?> { Data = result.ToList() };      
         }
 
         /// <summary>

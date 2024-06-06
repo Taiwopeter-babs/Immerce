@@ -18,6 +18,8 @@ namespace Immerce.Shared
         /// </summary>
         public List<ProductVariant> Variants { get; set; } = new();
 
+        public bool Featured { get; set; } = false;
+
         public int? CategoryId { get; set; }
 
         public Category? Category { get; set; }

@@ -3,11 +3,37 @@
 @page "/products/search/{searchString}"
 @inject IProductService ProductService
 
-
+<style>
+    .hero-title {
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 500px;
+        background: linear-gradient(225deg, #1D6C60, #246C82);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+</style>
 
 <PageTitle>Immerce Shop</PageTitle>
 
-<ProductList />
+<div class="hero-title">
+    <h2>Immerce Experience</h2>
+</div>
+
+
+@if (CategoryUrl == null && SearchString == null)
+{
+    <FeaturedProducts />
+}
+else
+{
+    <ProductList />
+}
+
 
 @code
 {

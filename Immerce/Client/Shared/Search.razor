@@ -1,7 +1,10 @@
 ﻿@inject NavigationManager NavManager
 @inject IProductService ProductService
 
-<div class="input-group mb-3">
+
+
+
+<div class="input-group mb-3 search-input">
 
   <input type="search"
          class="form-control"
@@ -50,7 +53,6 @@
         }
         else if (searchString != null && searchString.Length > 1)
         {
-            Console.WriteLine(searchString);
             suggestions = await ProductService.GetProductsSuggestions(searchString);
         }
     }

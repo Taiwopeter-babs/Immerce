@@ -2,20 +2,35 @@
 
 namespace Immerce.Client.Services
 {
+    /// <summary>
+    /// Product service interface for client interaction
+    /// </summary>
     public interface IProductService
     {
         /// <summary>
         /// An event that is invoked when the products page parameter is changed
         /// on the page to get products by <b>categoryUrl</b>
         /// </summary>
-        event EventHandler? ProductsChanged;
-        Task GetProducts(string? categoryUrl = null);
-
-        Task<ServiceResponse<Product>?> GetProduct(int id);
+        event EventHandler? ProductsListUrlChanged;
 
         /// <summary>
         /// Public property to access all products
         /// </summary>
         List<Product> Products { get; set; }
+
+        /// <summary>
+        /// Notifier for product search result
+        /// </summary>
+        string Message { get; set; }
+
+        Task GetProducts(string? categoryUrl = null);
+
+        Task<ServiceResponse<Product?>> GetProduct(int id);
+
+        Task SearchProducts(string? searchString = null);
+
+        Task<List<string>?> GetProductsSuggestions(string? searchString = null);
+
+
     }
 }

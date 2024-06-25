@@ -1,0 +1,60 @@
+﻿@inject NavigationManager NavManager
+@inject IProductService ProductService
+
+
+
+
+<div class="input-group mb-3 search-input">
+
+  <input type="search"
+         class="form-control"
+         placeholder="Search products..."
+         aria-label="Search products..."
+         list="products"
+         @bind-value="searchString"
+         @bind-value:event="oninput"
+         @onkeyup="HandleSearch"
+         @ref="searchInput" />
+
+    <datalist id="products">
+        @foreach (var suggestion in suggestions!)
+        {
+            <option>@suggestion</option>
+        }
+    </datalist>
+
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="SearchProducts">
+            <span class="oi oi-magnifying-glass"></span>
+        </button>
+    </div>
+
+</div>
+
+
+@code {
+    private string? searchString = string.Empty;
+    private List<string>? suggestions = new();
+    protected ElementReference searchInput;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await searchInput.FocusAsync();
+    }
+
+    public void SearchProducts() => NavManager.NavigateTo($"products/search/{searchString}");
+
+    public async Task HandleSearch(KeyboardEventArgs args)
+    {
+        if (args.Key == null || args.Key!.Equals("Enter"))
+        {
+            SearchProducts();
+        }
+        else if (searchString != null && searchString.Length > 1)
+        {
+            suggestions = await ProductService.GetProductsSuggestions(searchString);
+        }
+    }
+
+}

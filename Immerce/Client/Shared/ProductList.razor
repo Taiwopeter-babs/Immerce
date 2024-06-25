@@ -1,11 +1,10 @@
 ﻿@inject IProductService ProductService
 @implements IDisposable
 
-<h3>Products</h3>
 
 @if (ProductService.Products.Count == 0)
 {
-    <p><em>Loading Products...</em></p>
+    <p><em>@ProductService.Message</em></p>
 }
 else
 {
@@ -24,7 +23,7 @@ else
                     <h4 class="mb-0">@product.Title</h4>
                 </a>
                 <p>@product.Description</p>
-                <h5 class="price">$@product.Price</h5>
+                <h5 class="price">@GetProductPriceText(product)</h5>
             </div>
         </li>
     }
@@ -33,17 +32,18 @@ else
 }
 
 
-
 @code {
 
     protected override void OnInitialized()
     {
-        ProductService.ProductsChanged += ProductChangedHandler!;
+        // Add event handler
+        ProductService.ProductsListUrlChanged += HandleProductsChanged!;
     }
 
     public void Dispose()
     {
-        ProductService.ProductsChanged -= ProductChangedHandler!;
+        // remove event handler
+        ProductService.ProductsListUrlChanged -= HandleProductsChanged!;
     }
 
     /// <summary>
@@ -51,10 +51,24 @@ else
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public async void ProductChangedHandler(object sender, EventArgs e)
+    public async void HandleProductsChanged(object sender, EventArgs e)
     {
         await InvokeAsync(() => StateHasChanged());
     }
 
-    
+    private string GetProductPriceText(Product product)
+    {
+        string priceText = string.Empty;
+        List<ProductVariant>? variants = product.Variants;
+
+        if (variants.Count == 0)
+            return priceText;
+
+        if (variants.Count == 1)
+            return $"${variants[0].Price}";
+
+        decimal minPrice = variants.Min(v => v.Price);
+
+        return $"Starting @ ${minPrice}";
+    }
 }

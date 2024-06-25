@@ -1,0 +1,14 @@
+﻿@inject NavigationManager NavManager
+
+
+<button class="button-comp">
+    <a href="">
+        <i class="bi bi-cart-check-fill"></i>
+        Immerce
+    </a>
+</button>
+
+
+@code {
+    private void GoHome() => NavManager.NavigateTo("");
+}

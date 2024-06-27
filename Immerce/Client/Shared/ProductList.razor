@@ -14,12 +14,12 @@ else
     {
         <li class="media my-3">
             <div class="media-img-wrapper mr-2">
-                        <a href="/product/@product.Id">
+                        <a href="/products/@product.Id">
                     <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
                 </a>
             </div>
             <div class="media-body">
-                        <a href="/product/@product.Id">
+                        <a href="/products/@product.Id">
                     <h4 class="mb-0">@product.Title</h4>
                 </a>
                 <p>@product.Description</p>
@@ -28,7 +28,15 @@ else
         </li>
     }
     
-</ul>
+    </ul>
+
+    for (int pageIdx = 1; pageIdx <= ProductService.PageParameters.TotalPages; pageIdx++)
+    {
+        <a class="btn @GetPageButtonStyle(pageIdx) page-selection"
+           href="products/search?searchString=@ProductService.PageParameters.LastSearchString&page=@pageIdx">
+           @pageIdx
+        </a>
+    }
 }
 
 
@@ -70,5 +78,12 @@ else
         decimal minPrice = variants.Min(v => v.Price);
 
         return $"Starting @ ${minPrice}";
+    }
+
+    private string GetPageButtonStyle(int pageIdx)
+    {
+        return pageIdx == ProductService.PageParameters.Page
+                ? "btn-info"
+                : "btn-outline-info";
     }
 }

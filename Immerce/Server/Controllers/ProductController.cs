@@ -39,17 +39,19 @@ namespace Immerce.Server.Controllers
             return Ok(response);
         }
 
+        // GET api/v1/products/search/[?searchString=stringValue&page=1]
         [HttpGet("search")]
-        public async Task<ActionResult<ServiceResponse<List<Product>>?>> GetProductsBySearch([FromQuery]string searchString)
+        public async Task<ActionResult<ServiceResponse<ProductSearchDto>>>
+                GetProductsBySearch([FromQuery]ProductParameters productParams)
         {
-            var response = await _productService.SearchProducts(searchString);
+            var response = await _productService.SearchProducts(productParams);
 
             return Ok(response);
         }
 
         // GET api/v1/products/search/suggestions[?searchString=stringValue]
         [HttpGet("search/suggestions")]
-        public async Task<ActionResult<ServiceResponse<List<string>>>> GetProductsSuggestions([FromQuery] string? searchString)
+        public async Task<ActionResult<ServiceResponse<List<string>>>> GetProductsSuggestions([FromQuery]string? searchString)
         {
             var response = await _productService.GetProductsSuggestions(searchString);
 

@@ -1,4 +1,4 @@
-﻿@page "/product/{id:int}"
+﻿@page "/products/{id:int}"
 @inject IProductService ProductService
 
 
@@ -19,14 +19,14 @@ else
         </a>
       </div>
       <div class="media-body">
-        <a href="/product/@product.Id">
+        <a href="/products/@product.Id">
             <h3 class="mb-0">@product.Title</h3>
         </a>
-        <p>@product.Description</p>
+        <p class="description">@product.Description</p>
         
         @if (product.Variants != null && product.Variants.Count > 1)
         {
-            <div class="mb-3">
+            <div class="mb-3 variant-option">
                 <label for="productVariant" class="form-label">Select product variant:</label>
                 <select class="form-select form-select-sm mb-3" @bind="currentTypeId">
                     @foreach (var variant in product.Variants)

@@ -1,6 +1,6 @@
 ﻿@page "/"
 @page "/{categoryUrl}"
-@page "/products/search/{searchString}"
+@page "/products/search/"
 @inject IProductService ProductService
 
 <style>
@@ -40,11 +40,23 @@ else
     [Parameter]
     public string? CategoryUrl { get; set; } = null;
 
+
+    #region Query Parameters
+
+    [SupplyParameterFromQuery]
     [Parameter]
-    public string? SearchString { get; set; } = null;
+    public string? SearchString { get; set; }
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int Page { get; set; }
+
+    #endregion
 
     protected override async Task OnParametersSetAsync()
     {
+        ProductService.PageParameters.Page = Page;
+
         if (SearchString != null)
             await ProductService.SearchProducts(SearchString);
         else

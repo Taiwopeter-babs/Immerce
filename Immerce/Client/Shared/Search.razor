@@ -11,8 +11,8 @@
          placeholder="Search products..."
          aria-label="Search products..."
          list="products"
-         @bind-value="searchString"
-         @bind-value:event="oninput"
+         @bind="searchString"
+         @bind:event="oninput"
          @onkeyup="HandleSearch"
          @ref="searchInput" />
 
@@ -34,7 +34,9 @@
 
 @code {
     private string? searchString = string.Empty;
+
     private List<string>? suggestions = new();
+
     protected ElementReference searchInput;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -43,7 +45,20 @@
             await searchInput.FocusAsync();
     }
 
-    public void SearchProducts() => NavManager.NavigateTo($"products/search/{searchString}");
+    public void SearchProducts()
+    {
+        Dictionary<string, object?> queryParams = new()
+        {
+                ["searchString"] = searchString,
+                ["page"] = ProductService.PageParameters.Page.ToString()
+
+        };
+
+        string newUri = NavManager.GetUriWithQueryParameters(queryParams);
+
+        NavManager.NavigateTo(newUri);
+    }
+
 
     public async Task HandleSearch(KeyboardEventArgs args)
     {
@@ -56,5 +71,4 @@
             suggestions = await ProductService.GetProductsSuggestions(searchString);
         }
     }
-
 }

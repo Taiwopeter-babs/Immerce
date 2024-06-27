@@ -1,5 +1,6 @@
 ﻿
 using Immerce.Server.Data;
+using Immerce.Server.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -13,6 +14,8 @@ namespace Immerce.Server.Services
         {
             _dbContext = dbContext;
         }
+
+        #region Public Methods
 
         public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
         {
@@ -78,8 +81,6 @@ namespace Immerce.Server.Services
             List<Product> products = await FindProductsByCondition(pr => 
                 pr.Title.Contains(searchString) || pr.Description.Contains(searchString));
 
-            
-
             /// <summary>
             /// Get the trimmed words from a product's description
             /// </summary>
@@ -122,18 +123,51 @@ namespace Immerce.Server.Services
         /// </summary>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public async Task<ServiceResponse<List<Product>>> SearchProducts(string searchString)
+        public async Task<ServiceResponse<ProductSearchDto>> SearchProducts(ProductParameters productParams)
         {
-            List<Product> products = await FindProductsByCondition(pr => 
-                pr.Title.Contains(searchString) || pr.Description.Contains(searchString));
+            ProductSearchDto searchData;
 
-            ServiceResponse<List<Product>> response = new()
+            if (string.IsNullOrEmpty(productParams.SearchString))
             {
-                Data = products
+                searchData = new()
+                {
+                    Products = new(),
+                    Page = productParams.Page,
+                    TotalPages = 0
+                };
+
+                return new ServiceResponse<ProductSearchDto> { Data = searchData };
+            }
+
+            Expression<Func<Product, bool>> expression = (pr) => 
+                pr.Title.Contains(productParams.SearchString)
+                || pr.Description.Contains(productParams.SearchString);
+
+            List<Product> products = await FindProductsByCondition(expression);
+
+            int totalPages = (int)Math.Ceiling(products.Count / (float)productParams.PageSize);
+
+            var searchResults = await _dbContext.Products
+                    .Where(expression)
+                    .Include(pr => pr.Variants)
+                    .GetProductsByPage(productParams.Page, productParams.PageSize)
+                    .ToListAsync();
+
+            searchData = new()
+            {
+                Products = searchResults,
+                Page = productParams.Page,
+                TotalPages = totalPages
+            };
+
+            ServiceResponse<ProductSearchDto> response = new()
+            {
+                Data = searchData
             };
 
             return response;
         }
+        #endregion
 
         private async Task<List<Product>> FindProductsByCondition(Expression<Func<Product, bool>> expression)
         {

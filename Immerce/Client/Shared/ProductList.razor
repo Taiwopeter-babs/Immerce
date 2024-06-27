@@ -30,17 +30,27 @@ else
     
     </ul>
 
-    for (int pageIdx = 1; pageIdx <= ProductService.PageParameters.TotalPages; pageIdx++)
+    if (RenderPagination)
     {
-        <a class="btn @GetPageButtonStyle(pageIdx) page-selection"
-           href="products/search?searchString=@ProductService.PageParameters.LastSearchString&page=@pageIdx">
-           @pageIdx
-        </a>
+        for (int pageIdx = 1; pageIdx <= ProductService.PageParameters.TotalPages; pageIdx++)
+        {
+            <a class="btn @GetPageButtonStyle(pageIdx) page-selection"
+               href="products/search?searchString=@ProductService.PageParameters.LastSearchString&page=@pageIdx">
+                @pageIdx
+            </a>
+        }
     }
+
+   
 }
 
 
 @code {
+    /// <summary>
+    /// Optional paramter to render the pagination markup. Defaults to false.
+    /// </summary>
+    [Parameter]
+    public bool RenderPagination { get; set; } = false;
 
     protected override void OnInitialized()
     {

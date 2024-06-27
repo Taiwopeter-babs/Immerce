@@ -37,7 +37,7 @@ namespace Immerce.Client.Services
 
         Task<ServiceResponse<Product?>> GetProduct(int id);
 
-        Task SearchProducts(string? searchString = null);
+        Task SearchProducts(string? searchString);
 
         Task<List<string>?> GetProductsSuggestions(string? searchString = null);
 

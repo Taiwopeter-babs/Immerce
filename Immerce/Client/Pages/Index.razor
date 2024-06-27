@@ -31,7 +31,14 @@
 }
 else
 {
-    <ProductList />
+   if (SearchString != null)
+   {
+       <ProductList RenderPagination="true" />
+   }
+   else
+   {
+       <ProductList />
+   }
 }
 
 

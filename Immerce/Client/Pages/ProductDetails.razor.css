@@ -1,4 +1,8 @@
-﻿.media-img {
+﻿.description {
+    margin-top: 20px;
+}
+
+.media-img {
     max-height: 500px;
     max-width: 500px;
     border-radius: 6px;
@@ -19,10 +23,19 @@
 
 
 
+
+
 @media (max-width: 1024px) {
 
     .media-img {
         max-width: 300px;
     }
 
+}
+
+@media (min-width: 991px) {
+
+    .variant-option {
+        width: 50%;
+    }
 }

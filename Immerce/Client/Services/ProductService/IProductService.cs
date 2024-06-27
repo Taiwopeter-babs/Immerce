@@ -7,6 +7,7 @@ namespace Immerce.Client.Services
     /// </summary>
     public interface IProductService
     {
+        #region Properties
         /// <summary>
         /// An event that is invoked when the products page parameter is changed
         /// on the page to get products by <b>categoryUrl</b>
@@ -23,6 +24,15 @@ namespace Immerce.Client.Services
         /// </summary>
         string Message { get; set; }
 
+        /// <summary>
+        /// Page parameters
+        /// </summary>
+        PageParameters PageParameters { get; set; }
+
+        #endregion
+
+        #region Methods
+
         Task GetProducts(string? categoryUrl = null);
 
         Task<ServiceResponse<Product?>> GetProduct(int id);
@@ -31,6 +41,6 @@ namespace Immerce.Client.Services
 
         Task<List<string>?> GetProductsSuggestions(string? searchString = null);
 
-
+        #endregion 
     }
 }

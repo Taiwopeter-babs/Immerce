@@ -13,18 +13,7 @@ else
     @foreach (Product product in ProductService.Products!)
     {
         <li class="media my-3">
-            <div class="media-img-wrapper mr-2">
-                        <a href="/products/@product.Id">
-                    <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
-                </a>
-            </div>
-            <div class="media-body">
-                        <a href="/products/@product.Id">
-                    <h4 class="mb-0">@product.Title</h4>
-                </a>
-                <p>@product.Description</p>
-                <h5 class="price">@GetProductPriceText(product)</h5>
-            </div>
+            <ProductComponent @key=@product.Id product="@product" />
         </li>
     }
     
@@ -74,21 +63,6 @@ else
         await InvokeAsync(() => StateHasChanged());
     }
 
-    private string GetProductPriceText(Product product)
-    {
-        string priceText = string.Empty;
-        List<ProductVariant>? variants = product.Variants;
-
-        if (variants.Count == 0)
-            return priceText;
-
-        if (variants.Count == 1)
-            return $"${variants[0].Price}";
-
-        decimal minPrice = variants.Min(v => v.Price);
-
-        return $"Starting @ ${minPrice}";
-    }
 
     private string GetPageButtonStyle(int pageIdx)
     {

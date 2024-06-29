@@ -1,4 +1,5 @@
-﻿using Immerce.Client.Services;
+﻿using Blazored.LocalStorage;
+using Immerce.Client.Services;
 
 namespace Immerce.Client.Extensions
 {
@@ -10,8 +11,12 @@ namespace Immerce.Client.Extensions
         /// <param name="services"></param>
         public static void ConfigureClientServicesDependencies(this IServiceCollection services)
         {
+            services.AddBlazoredLocalStorage();
+
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICartService, CartService>();
+
         }
     }
 }

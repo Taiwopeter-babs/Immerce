@@ -1,0 +1,48 @@
+﻿@inject ICartService CartService
+@inject ISyncLocalStorageService LocalStorage
+@implements IDisposable
+
+<div class="cart-icon">
+    <a href="cart" class="btn btn-info-outline position-relative">
+        <i class="bi bi-cart3"></i>&nbsp;
+        @* <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            @ItemCount
+        </span> *@
+        <span>Cart</span>&nbsp;
+        <span class="cart-count">@GetCartItemsCount()</span>
+    </a>
+</div>
+
+
+@code {
+
+    private int GetCartItemsCount()
+    {
+        List<CartItem>? cart = LocalStorage.GetItem<List<CartItem>>(CartService.CartName);
+
+        return cart == null ? 0 : cart.Count;
+    }
+
+    protected override void OnInitialized()
+    {
+        // Add event handler
+        CartService.CartChanged += HandleCartChanged!;
+    }
+
+    public void Dispose()
+    {
+        // remove event handler
+        CartService.CartChanged += HandleCartChanged!;
+    }
+
+    /// <summary>
+    /// Event handler for re-rendering component
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public async void HandleCartChanged(object sender, EventArgs e)
+    {
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+}

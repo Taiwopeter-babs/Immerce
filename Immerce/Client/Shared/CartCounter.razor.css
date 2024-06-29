@@ -1,0 +1,16 @@
+﻿.cart-count {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: red;
+    color: white;
+    width: 17px;
+    height: 17px;
+    font-size: .6rem;
+    font-weight: 650;
+    border-radius: 17px;
+}
+
+.cart-icon:hover {
+    cursor: pointer;
+}

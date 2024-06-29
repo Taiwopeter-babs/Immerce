@@ -23,3 +23,22 @@
 .show-description:hover {
     cursor: pointer;
 }
+
+.price-cart {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.price-cart > div:first-child {
+    padding-right: 20px;
+}
+
+@media (min-width: 600px) {
+
+    .price-cart {
+        width: 50%;
+    }
+
+}

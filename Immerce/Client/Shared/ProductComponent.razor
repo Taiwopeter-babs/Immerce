@@ -20,15 +20,28 @@
         </span>
     </p>
     
-
-    <h5 class="price">@GetProductPriceText(product)</h5>
+    <div class="price-cart">
+        <div><h5 class="price">@GetProductPriceText(product)</h5></div>
+        <div>
+            <CartButton 
+                CartProductArgs="GetCartProductArgs()"
+                CartProductChanged="CartProductChanged" 
+             />
+        </div>
+    </div>
+    
 </div>
 
 
 
 @code {
     [Parameter]
+    [EditorRequired]
     public Product product { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<CartProductArgs> CartProductChanged { get; set; }
 
     private string showDescriptionButton { get; set; } = string.Empty;
 
@@ -36,19 +49,26 @@
 
     private int maxLength = 200;
 
+    public CartProductArgs cartProductArgs { get; set; } = new();
+
+
+    #region Methods
 
     /// <summary>
-    /// Set description text
+    /// Set description text and child component event args
     /// </summary>
     protected override void OnParametersSet()
     {
         ToggleDescription();
+
+        cartProductArgs = GetCartProductArgs();
     }
 
 
     private string GetProductPriceText(Product product)
     {
         string priceText = string.Empty;
+
         List<ProductVariant>? variants = product.Variants;
 
         if (variants.Count == 0)
@@ -68,40 +88,40 @@
     /// </summary>
     public void ToggleDescription()
     {
-        Console.WriteLine(showDescriptionButton);
-        Console.WriteLine(descriptionText.Length);
-
         // for first render
         if (string.IsNullOrEmpty(descriptionText) && string.IsNullOrEmpty(showDescriptionButton))
         {
             if (product.Description.Length <= maxLength)
             {
                 descriptionText = product.Description;
-                return;
             }
 
             else
             {
                 descriptionText = $"{product.Description.Substring(0, maxLength)}";
                 showDescriptionButton = "read more...";
-                return;
             }
+
+            return;
         }
 
         // Toggle
 
         // description texts < 200
-        if (descriptionText.Length <= maxLength && string.IsNullOrEmpty(showDescriptionButton))
+        if (descriptionText.Length <= maxLength)
         {
+            if (string.IsNullOrEmpty(showDescriptionButton))
+                return;
+
+            if (showDescriptionButton == "read more...")
+            {
+                descriptionText = product.Description;
+                showDescriptionButton = "hide";
+            }
+
             return;
         }
 
-        if (descriptionText.Length <= maxLength && showDescriptionButton == "read more...")
-        {
-            descriptionText = product.Description;
-            showDescriptionButton = "hide";
-            return;
-        }
 
         else if (descriptionText.Length > maxLength && showDescriptionButton == "hide")
         {
@@ -109,4 +129,20 @@
             showDescriptionButton = "read more...";
         }
     }
+
+
+    private CartProductArgs GetCartProductArgs()
+    {
+        return new CartProductArgs()
+            {
+                ProductId = product.Id,
+
+                /// The first variant is selected which is the default
+                /// if the product has only one variant
+                ProductTypeId = product.Variants[0].ProductTypeId
+            };
+    }
+
+
+    #endregion 
 }

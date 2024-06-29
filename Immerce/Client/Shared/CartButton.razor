@@ -1,0 +1,61 @@
+﻿@inject ISyncLocalStorageService LocalStorage
+@inject ICartService CartService
+
+<button class="btn @(productAdded ? "btn-danger" : "btn-success")"
+        @onclick="ToggleProductStatus">
+    <i class="bi bi-cart-plus"></i>&nbsp; @(productAdded ? "Remove" : "Add to cart")
+</button>
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public CartProductArgs CartProductArgs { get; set; } = new();
+
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<CartProductArgs> CartProductChanged { get; set; }
+
+    private bool productAdded { get; set; } = false;
+
+
+
+    protected override void OnInitialized()
+    {
+        CheckProductInCart();
+    }
+
+    private async Task ToggleProductStatus()
+    {
+        await CartProductChanged.InvokeAsync(CartProductArgs);
+        ToggleButtonText();
+    }
+
+
+    private bool CheckProductInCart()
+    {
+        List<CartItem>? cart = LocalStorage.GetItem<List<CartItem>>(CartService.CartName);
+
+        if (cart == null)
+            return false;
+
+
+        CartItem? cartItem = cart
+                .Where(item => item.ProductId.Equals(CartProductArgs.ProductId))
+                .FirstOrDefault();
+
+        if (cartItem == null)
+            return false;
+
+        productAdded = !productAdded;
+        return true;
+    }
+
+    private void ToggleButtonText()
+    {
+        bool productInCart = CheckProductInCart();
+
+        productAdded = productInCart;
+    }
+}

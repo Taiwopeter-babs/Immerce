@@ -137,12 +137,10 @@ else
 
     public CartProductArgs GetCartProductArgs()
     {
-        CartProductArgs args = new()
+        return new CartProductArgs()
             {
                 ProductId = product!.Id,
                 ProductTypeId = selectedVariant!.ProductTypeId
             };
-
-        return args;
     }
 }

@@ -1,7 +1,5 @@
 ﻿@inject IProductService ProductService
 
-
-
 <div class="media-img-wrapper mr-2">
     <a href="/products/@product.Id">
         <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
@@ -92,22 +90,19 @@
         if (string.IsNullOrEmpty(descriptionText) && string.IsNullOrEmpty(showDescriptionButton))
         {
             if (product.Description.Length <= maxLength)
-            {
                 descriptionText = product.Description;
-            }
 
             else
             {
-                descriptionText = $"{product.Description.Substring(0, maxLength)}";
+                descriptionText = product.Description.Substring(0, maxLength);
                 showDescriptionButton = "read more...";
             }
 
             return;
         }
 
-        // Toggle
+        /// Toggle
 
-        // description texts < 200
         if (descriptionText.Length <= maxLength)
         {
             if (string.IsNullOrEmpty(showDescriptionButton))
@@ -115,7 +110,8 @@
 
             if (showDescriptionButton == "read more...")
             {
-                descriptionText = product.Description;
+                descriptionText = $"{descriptionText}{product.Description.Substring(maxLength)}";
+
                 showDescriptionButton = "hide";
             }
 
@@ -126,6 +122,7 @@
         else if (descriptionText.Length > maxLength && showDescriptionButton == "hide")
         {
             descriptionText = $"{product.Description.Substring(0, maxLength)}";
+
             showDescriptionButton = "read more...";
         }
     }

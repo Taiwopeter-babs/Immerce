@@ -22,6 +22,7 @@ namespace Immerce.Server.Extensions
         {
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICartService, CartService>();
         }
     }
 }

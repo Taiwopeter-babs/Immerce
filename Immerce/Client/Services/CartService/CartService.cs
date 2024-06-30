@@ -1,15 +1,21 @@
 ﻿using Blazored.LocalStorage;
 using Immerce.Shared;
+using Immerce.Shared.Dto;
+using System.Net.Http.Json;
 
 namespace Immerce.Client.Services
 {
+
     public class CartService : ICartService
     {
         private readonly ILocalStorageService _localStorage;
+        private readonly HttpClient _httpClient;
 
-        public CartService(ILocalStorageService localStorage)
+        public CartService(ILocalStorageService localStorage, HttpClient httpClient)
         {
             _localStorage = localStorage;
+            _httpClient = httpClient;
+
         }
 
         public  string CartName { get; } = "immerce_cart";
@@ -28,10 +34,11 @@ namespace Immerce.Client.Services
         /// <returns></returns>
         public async Task AddToCart(CartItem item)
         {
-            List<CartItem> cart = await GetCartItems();
+            List<CartItem> cart = await CheckCart();
 
             CartItem? cartItem = cart
-                    .Where(c => c.ProductId == item.ProductId)
+                    .Where(c => c.ProductId == item.ProductId
+                        && c.ProductTypeId == item.ProductTypeId)
                     .FirstOrDefault();
 
             if (cartItem != null)
@@ -54,6 +61,18 @@ namespace Immerce.Client.Services
             List<CartItem> cart = await CheckCart();
 
             return cart;
+        }
+
+        public async Task<List<CartProductDto>> GetCartProducts()
+        {
+            var cart = await CheckCart();
+
+            var response = await _httpClient.PostAsJsonAsync("api/v1/carts/products", cart);
+
+            var content = await response.Content
+                    .ReadFromJsonAsync<ServiceResponse<List<CartProductDto>>>();
+
+            return content.Data;
         }
 
         private async Task<List<CartItem>> CheckCart()

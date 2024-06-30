@@ -169,7 +169,8 @@ namespace Immerce.Server.Services
         }
         #endregion
 
-        private async Task<List<Product>> FindProductsByCondition(Expression<Func<Product, bool>> expression)
+        private async Task<List<Product>>
+            FindProductsByCondition(Expression<Func<Product, bool>> expression)
         {
             List<Product> products = await _dbContext.Products
                 .Where(expression)

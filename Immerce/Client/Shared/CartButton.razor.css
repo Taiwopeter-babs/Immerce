@@ -1,0 +1,14 @@
+﻿button {
+    width: 120px;
+    font-weight: 600;
+    font-size: .7rem;
+}
+
+@media (max-width: 600px) {
+
+    button {
+        width: 120px;
+        height: fit-content;
+        font-size: .5rem;
+    }
+}

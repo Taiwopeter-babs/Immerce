@@ -47,11 +47,11 @@
 
     public void SearchProducts()
     {
-        
+
         Dictionary<string, object?> queryParams = new()
         {
                 ["searchString"] = searchString,
-                ["page"] = ProductService.PageParameters.Page.ToString()
+                ["page"] = "1"
 
         };
 

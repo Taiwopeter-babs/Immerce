@@ -1,6 +1,6 @@
 ﻿@page "/products/{id:int}"
 @inject IProductService ProductService
-
+@inject ICartService CartService
 
 
 
@@ -13,15 +13,21 @@ else
   <h3>@product.Title</h3>
 
   <div class="media">
+
       <div class="media-img-wrapper mr-2">
+
         <a href="@product.ImageUrl">
             <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
         </a>
+
       </div>
+
       <div class="media-body">
+
         <a href="/products/@product.Id">
             <h3 class="mb-0">@product.Title</h3>
         </a>
+
         <p class="description">@product.Description</p>
         
         @if (product.Variants != null && product.Variants.Count > 1)
@@ -47,8 +53,14 @@ else
             }
             <h4 class="price">$@selectedVariant.Price</h4>
         }
-            
+
+        <CartButton
+            CartProductArgs="@GetCartProductArgs()"
+            CartProductChanged="HandleCartProductChanged"
+        />
+
       </div>
+
   </div>
 }
 
@@ -59,7 +71,7 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private Product? product = null;
+    private Product? product { get; set; }
 
     private string Message = string.Empty;
 
@@ -107,4 +119,28 @@ else
     /// the default is the only one available
     /// </summary>
     public ProductVariant? selectedVariant => GetSelectedVariant();
+
+    /// <summary>
+    /// handler to add to cart
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleCartProductChanged(CartProductArgs args)
+    {
+        CartItem cartItem = new()
+            {
+                ProductId = args.ProductId,
+                ProductTypeId = args.ProductTypeId
+            };
+
+        await CartService.AddToCart(cartItem);
+    }
+
+    public CartProductArgs GetCartProductArgs()
+    {
+        return new CartProductArgs()
+            {
+                ProductId = product!.Id,
+                ProductTypeId = selectedVariant!.ProductTypeId
+            };
+    }
 }

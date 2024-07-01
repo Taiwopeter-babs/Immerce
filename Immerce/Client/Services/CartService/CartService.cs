@@ -1,6 +1,5 @@
 ﻿using Blazored.LocalStorage;
 using Immerce.Shared;
-using Immerce.Shared.Dto;
 using System.Net.Http.Json;
 
 namespace Immerce.Client.Services
@@ -72,7 +71,28 @@ namespace Immerce.Client.Services
             var content = await response.Content
                     .ReadFromJsonAsync<ServiceResponse<List<CartProductDto>>>();
 
-            return content.Data;
+            return content!.Data!;
+        }
+
+        public async Task RemoveCartItem(int productId, int productTypeId)
+        {
+            List<CartItem>? cart = await CheckCart();
+
+            if (cart is null) return;
+
+            CartItem? cartItem = cart.Find(c => 
+                    c.ProductId == productId && c.ProductTypeId == productTypeId);
+            
+            if (cartItem != null)
+            {
+                cart.Remove(cartItem);
+
+                // update local storage
+                await _localStorage.SetItemAsync(CartName, cart);
+
+                // invoke event handler
+                CartChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private async Task<List<CartItem>> CheckCart()

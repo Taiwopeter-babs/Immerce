@@ -1,5 +1,4 @@
 ﻿using Immerce.Server.Services;
-using Immerce.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Immerce.Server.Controllers

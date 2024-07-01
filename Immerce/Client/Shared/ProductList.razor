@@ -10,10 +10,10 @@
 
 else
 {
-<ul class="list-unstyled">
+<ul class="list-unstyled list-container">
     @foreach (Product product in ProductService.Products!)
     {
-            <li class="media my-3" @key=@product.Id>
+            <li class="media my-3 container" @key=@product.Id>
                 <ProductComponent product="@product" CartProductChanged="HandleCartProductChanged" />
             </li>
     }

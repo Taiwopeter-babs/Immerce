@@ -1,9 +1,103 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 
-<h3>Cart</h3>
+@* Styles *@
+
+<style>
+    .message {
+        max-width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        background: linear-gradient(225deg, #1D6C60, #246C82);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+</style>
+
+@* End Styles *@
+
+
+@* Title and Header *@
+<PageTitle>Immerce Shop - Your Cart</PageTitle>
+
+<div class="hero-title">
+    <h2>Your Immerce Cart</h2>
+</div>
+
+@if (CartProducts == null || CartProducts.Count == 0)
+{
+    <div class="message">@Message</div>
+}
+else
+{
+    <div>
+        @foreach(CartProductDto product in CartProducts)
+        {
+            <div class="container">
+
+                <div class="image-wrapper">
+                    <img src="@product.ImageUrl" alt="@product.Title" class="image" />
+                </div>
+
+                <div class="name">
+                    <h5><a href="/products/@product.ProductId">@product.Title</a></h5>
+                    <span>
+                        @(product.ProductType == "Default" ? "Type: None" : $"Type: {product.ProductType}")
+                    </span>
+                    &nbsp;
+                    <button class="btn btn-danger"
+                            @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
+                            <i class="bi bi-cart-plus"></i>&nbsp;Remove
+                    </button>
+                </div>
+
+                <div class="cart-product-price">$@product.Price</div>
+            </div>
+        }
+
+        <div class="cart-product-price total">
+            Total price of (@CartProducts.Count) items: $@CartProducts.Sum(pr => pr.Price)
+        </div>
+    </div>
+}
 
 @code {
-    List<CartProductDto> CartProducts = null;
-    string message = string.Empty;
+    List<CartProductDto> CartProducts = new();
+
+    string Message = "Loading cart...";
+
+    #region Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCart();
+    }
+
+    private async Task RemoveFromCart(int productId, int productTypeId)
+    {
+        await CartService.RemoveCartItem(productId, productTypeId);
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        if ((await CartService.GetCartItems()).Count == 0)
+        {
+            Message = "Ooops! Your cart is empty";
+
+            CartProducts = new();
+        }
+        else
+        {
+            CartProducts = await CartService.GetCartProducts();
+        }
+    }
+    #endregion
+
+
 }

@@ -28,7 +28,11 @@
 
     private async Task ToggleProductStatus()
     {
-        await CartProductChanged.InvokeAsync(CartProductArgs);
+        if (productAdded)
+            await CartService.RemoveCartItem(CartProductArgs.ProductId, CartProductArgs.ProductTypeId);
+        else
+            await CartProductChanged.InvokeAsync(CartProductArgs);
+
         ToggleButtonText();
     }
 

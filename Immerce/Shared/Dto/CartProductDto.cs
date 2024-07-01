@@ -1,6 +1,6 @@
 ﻿
 
-namespace Immerce.Shared.Dto
+namespace Immerce.Shared
 {
     public class CartProductDto
     {

@@ -18,5 +18,7 @@ namespace Immerce.Client.Services
         Task<List<CartProductDto>> GetCartProducts();
 
         Task RemoveCartItem(int productId, int productTypeId);
+
+        Task UpdateQuantity(CartProductDto product);
     }
 }

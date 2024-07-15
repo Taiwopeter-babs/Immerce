@@ -21,13 +21,17 @@ else
 
     if (RenderPagination)
     {
-        for (int pageIdx = 1; pageIdx <= ProductService.PageParameters.TotalPages; pageIdx++)
-        {
-            <a class="btn @GetPageButtonStyle(pageIdx) page-selection"
-               href="products/search?searchString=@ProductService.PageParameters.LastSearchString&page=@pageIdx">
-                @pageIdx
-            </a>
-        }
+        <div class="pagination-container">
+            @for (int pageIdx = 1; pageIdx <= ProductService.PageParameters.TotalPages; pageIdx++)
+            {
+            
+                <a class="btn @GetPageButtonStyle(pageIdx) page-selection"
+                    href="products/search?searchString=@ProductService.PageParameters.LastSearchString&page=@pageIdx">
+                    @pageIdx
+                </a>
+            
+            }
+        </div>
     }
 
    
@@ -35,6 +39,9 @@ else
 
 
 @code {
+    [Inject]
+    protected ToastService ToastService { get; set; } = default!;
+
     /// <summary>
     /// Optional paramter to render the pagination markup. Defaults to false.
     /// </summary>
@@ -84,6 +91,7 @@ else
             };
 
         await CartService.AddToCart(cartItem);
+        ToastService.Notify(new(ToastType.Success, "Product added to cart"));
     }
 
 }

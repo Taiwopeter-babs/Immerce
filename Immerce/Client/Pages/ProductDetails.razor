@@ -34,7 +34,10 @@ else
         {
             <div class="mb-3 variant-option">
                 <label for="productVariant" class="form-label">Select product variant:</label>
-                <select class="form-select form-select-sm mb-3" @bind="currentTypeId">
+                <select
+                    class="form-select form-select-sm mb-3"
+                    @bind="currentTypeId"
+                >
                     @foreach (var variant in product.Variants)
                     {
                         <option value="@variant.ProductTypeId">@variant.ProductType?.Name</option>
@@ -68,6 +71,9 @@ else
 
 
 @code {
+    [Inject]
+    protected ToastService ToastService { get; set; } = default!;
+
     [Parameter]
     public int Id { get; set; }
 
@@ -81,6 +87,11 @@ else
     /// </summary>
     private int currentTypeId = 1;
 
+    /// <summary>
+    /// The selected variant in the dropdown menu. If there are no variants,
+    /// the default is the only one available
+    /// </summary>
+    public ProductVariant? selectedVariant => GetSelectedVariant();
 
 
     protected override async Task OnParametersSetAsync()
@@ -105,20 +116,12 @@ else
             // pick the first product type as the selected
             currentTypeId = variants[0].ProductTypeId;
         }
-
     }
 
     private ProductVariant? GetSelectedVariant()
     {
         return product?.Variants.FirstOrDefault(pv => pv.ProductTypeId == currentTypeId);
-
     }
-
-    /// <summary>
-    /// The selected variant in the dropdown menu. If there are no variants,
-    /// the default is the only one available
-    /// </summary>
-    public ProductVariant? selectedVariant => GetSelectedVariant();
 
     /// <summary>
     /// handler to add to cart
@@ -129,18 +132,20 @@ else
         CartItem cartItem = new()
             {
                 ProductId = args.ProductId,
-                ProductTypeId = args.ProductTypeId
+                ProductTypeId = currentTypeId
             };
 
         await CartService.AddToCart(cartItem);
+        ToastService.Notify(new(ToastType.Success, "Product added to cart"));
+
     }
 
     public CartProductArgs GetCartProductArgs()
     {
         return new CartProductArgs()
             {
-                ProductId = product!.Id,
-                ProductTypeId = selectedVariant!.ProductTypeId
+                ProductId = selectedVariant!.ProductId,
+                ProductTypeId = currentTypeId
             };
     }
 }

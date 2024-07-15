@@ -52,6 +52,11 @@
     flex-direction: column;
 }
 
+.cart-count {
+    color: white;
+    border: 1px solid black;
+}
+
 @media (min-width: 641px) {
     .navbar-toggler, .navbar-toggler-wrapper {
         display: none;

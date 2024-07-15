@@ -2,19 +2,29 @@
 @inject ISyncLocalStorageService LocalStorage
 @implements IDisposable
 
-<div class="cart-icon">
-    <a href="cart" class="btn btn-info-outline position-relative">
-        <i class="bi bi-cart3"></i>&nbsp;
-        @* <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            @ItemCount
-        </span> *@
-        <span>Cart</span>&nbsp;
-        <span class="cart-count">@GetCartItemsCount()</span>
+@if(IsNavigation)
+{
+    <NavLink class="nav-link" href="/cart" Match="NavLinkMatch.Prefix">
+        <i class="bi bi-cart3"></i>&nbsp;Cart&nbsp;@GetCartItemsCount()
+    </NavLink>
+}
+else
+{
+    <a class="nav-link cart-count" href="/cart">
+        <i class="bi bi-cart3 cart-count"></i>&nbsp;Cart&nbsp;@GetCartItemsCount()
     </a>
-</div>
+}
+
 
 
 @code {
+    /// <summary>
+    /// Renders markup based on parameter value. A navigation link markup
+    /// from balzor is rendered if true, otherwise the HTML a link tag is rendered.
+    /// Defaults to true.
+    /// </summary>
+    [Parameter]
+    public bool IsNavigation { get; set; } = true;
 
     private int GetCartItemsCount()
     {

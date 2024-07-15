@@ -1,5 +1,4 @@
 ﻿using Immerce.Shared;
-using Immerce.Shared.Dto;
 
 namespace Immerce.Client.Services
 {
@@ -17,5 +16,9 @@ namespace Immerce.Client.Services
         Task<List<CartItem>> GetCartItems();
 
         Task<List<CartProductDto>> GetCartProducts();
+
+        Task RemoveCartItem(int productId, int productTypeId);
+
+        Task UpdateQuantity(CartProductDto product);
     }
 }

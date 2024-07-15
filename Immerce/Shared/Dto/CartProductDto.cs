@@ -1,6 +1,6 @@
 ﻿
 
-namespace Immerce.Shared.Dto
+namespace Immerce.Shared
 {
     public class CartProductDto
     {
@@ -16,6 +16,6 @@ namespace Immerce.Shared.Dto
 
         public decimal Price { get; set; }
 
-
+        public int Quantity { get; set; } = 1;
     }
 }

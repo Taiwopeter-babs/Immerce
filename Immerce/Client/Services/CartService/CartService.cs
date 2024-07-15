@@ -1,6 +1,5 @@
 ﻿using Blazored.LocalStorage;
 using Immerce.Shared;
-using Immerce.Shared.Dto;
 using System.Net.Http.Json;
 
 namespace Immerce.Client.Services
@@ -18,14 +17,17 @@ namespace Immerce.Client.Services
 
         }
 
-        public  string CartName { get; } = "immerce_cart";
+        #region Properties
 
+        public string CartName { get; } = "immerce_cart";
 
 
         /// <summary>
         /// Event for monitoring changes to cart
         /// </summary>
         public event EventHandler? CartChanged;
+
+        #endregion Properties
 
         /// <summary>
         /// Add an item to the cart in local storage
@@ -41,10 +43,11 @@ namespace Immerce.Client.Services
                         && c.ProductTypeId == item.ProductTypeId)
                     .FirstOrDefault();
 
+            // Quantity Increment
             if (cartItem != null)
-                return;
-
-            cart.Add(item);
+                cartItem.Quantity += 1;
+            else
+                cart.Add(item);
 
             await _localStorage.SetItemAsync(CartName, cart);
 
@@ -72,7 +75,53 @@ namespace Immerce.Client.Services
             var content = await response.Content
                     .ReadFromJsonAsync<ServiceResponse<List<CartProductDto>>>();
 
-            return content.Data;
+            return content!.Data!;
+        }
+
+        public async Task RemoveCartItem(int productId, int productTypeId)
+        {
+            var (cart, cartItem) = await CheckCartItem(productId, productTypeId);
+
+            if (cart is null) return;
+
+            if (cartItem != null)
+            {
+                cart.Remove(cartItem);
+
+                // update local storage
+                await _localStorage.SetItemAsync(CartName, cart);
+
+                // invoke event handler
+                CartChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public async Task UpdateQuantity(CartProductDto product)
+        {
+            var (cart, cartItem) = await CheckCartItem(product.ProductId, product.ProductTypeId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity = product.Quantity;
+
+                // update local storage
+                await _localStorage.SetItemAsync(CartName, cart);
+            }
+        }
+
+        private async Task<(List<CartItem>?, CartItem?)> CheckCartItem(int productId, int productTypeId)
+        {
+            List<CartItem>? cart = await CheckCart();
+
+            if (cart is null) 
+                return (null, null);
+
+            CartItem? cartItem = cart.Find(c =>
+                    c.ProductId == productId
+                    && c.ProductTypeId == productTypeId
+                 );
+
+            return (cart, cartItem);
         }
 
         private async Task<List<CartItem>> CheckCart()

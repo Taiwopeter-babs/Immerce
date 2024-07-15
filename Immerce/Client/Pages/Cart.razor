@@ -1,9 +1,147 @@
 ﻿@page "/cart"
 @inject ICartService CartService
+@inject IProductService ProductService
 
-<h3>Cart</h3>
+
+
+<style>
+    .message {
+        max-width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        background: linear-gradient(225deg, #1D6C60, #246C82);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+</style>
+
+@* End Styles *@
+
+
+@* Title and Header *@
+<PageTitle>Immerce Shop - Your Cart</PageTitle>
+
+<div class="hero-title">
+    <h2>Your Immerce Cart</h2>
+</div>
+
+@if (CartProducts == null || CartProducts.Count == 0)
+{
+    <div class="message">@Message</div>
+}
+else
+{
+    <div>
+        @foreach(CartProductDto product in CartProducts)
+        {
+            <div @key="product" class="container">
+
+                <div class="image-wrapper">
+                    <img src="@product.ImageUrl" alt="@product.Title" class="image" />
+                </div>
+
+                <div class="name">
+                    <h5><a href="/products/@product.ProductId">@product.Title</a></h5>
+                    <span>
+                        @(product.ProductType == "Default" ? "Type: None" : $"Type: {product.ProductType}")
+                    </span>
+                    &nbsp;
+                    <button class="btn btn-danger"
+                            @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
+                            <i class="bi bi-cart-plus"></i>&nbsp;Remove
+                    </button>
+                    <div class="quantity">
+                        <input type="number" min="1" step="1"
+                            value="@product.Quantity"
+                            @onchange="@((ChangeEventArgs e) => UpdateProductQuantity(e, product))" />
+                    </div>
+                </div>
+
+                <div class="cart-product-price">$@(product.Price * product.Quantity)</div>
+            </div>
+        }
+
+        <div class="cart-product-price total">
+            Total price of (@CartProducts.Count) items: $@CartProducts.Sum(pr => pr.Price * pr.Quantity)
+        </div>
+    </div>
+}
 
 @code {
-    List<CartProductDto> CartProducts = null;
-    string message = string.Empty;
+    [Inject]
+    protected ToastService ToastService { get; set; } = default!;
+
+    List<CartProductDto> CartProducts = new();
+
+    string Message = "Loading cart...";
+
+    #region Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCart();
+        ToastService.Notify(new(ToastType.Success, "Cart Loaded"));
+    }
+
+    #region SearchTrigger Event
+
+    // public void Dispose()
+    // {
+    //     // remove event handler
+    //     ProductService.ProductsListUrlChanged -= HandleProductsChanged!;
+    // }
+
+    // /// <summary>
+    // /// Event handler for re-rendering ProductList component when search is activated
+    // /// </summary>
+    // /// <param name="sender"></param>
+    // /// <param name="e"></param>
+    // public async void HandleProductsChanged(object sender, EventArgs e)
+    // {
+    //     await InvokeAsync(() => StateHasChanged());
+    // }
+
+    #endregion
+
+    private async Task RemoveFromCart(int productId, int productTypeId)
+    {
+        await CartService.RemoveCartItem(productId, productTypeId);
+        ToastService.Notify(new(ToastType.Danger, "Product removed from cart"));
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        if ((await CartService.GetCartItems()).Count == 0)
+        {
+            Message = "Ooops! Your cart is empty";
+
+            CartProducts = new();
+        }
+        else
+        {
+            CartProducts = await CartService.GetCartProducts();
+        }
+    }
+    private async Task UpdateProductQuantity(ChangeEventArgs e, CartProductDto product)
+    {
+        int quantity;
+
+        bool isParsed = int.TryParse(e.Value?.ToString(), out quantity);
+
+        if (isParsed)
+        {
+            product.Quantity = quantity < 1 ? 1 : quantity;
+            await CartService.UpdateQuantity(product);
+        }
+
+    }
+    #endregion
+
+
 }

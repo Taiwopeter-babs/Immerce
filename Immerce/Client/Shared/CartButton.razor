@@ -8,6 +8,9 @@
 
 
 @code {
+    [Inject]
+    protected ToastService ToastService { get; set; } = default!;
+
     [Parameter]
     [EditorRequired]
     public CartProductArgs CartProductArgs { get; set; } = new();
@@ -28,7 +31,15 @@
 
     private async Task ToggleProductStatus()
     {
-        await CartProductChanged.InvokeAsync(CartProductArgs);
+        if (productAdded)
+        {
+            await CartService.RemoveCartItem(CartProductArgs.ProductId, CartProductArgs.ProductTypeId);
+            ToastService.Notify(new(ToastType.Danger, "Product removed from cart"));
+        }
+        else
+            /// The invoked handler adds product to cart
+            await CartProductChanged.InvokeAsync(CartProductArgs);
+
         ToggleButtonText();
     }
 
@@ -42,7 +53,9 @@
 
 
         CartItem? cartItem = cart
-                .Where(item => item.ProductId.Equals(CartProductArgs.ProductId))
+                .Where(item => 
+                    item.ProductId.Equals(CartProductArgs.ProductId)
+                    && item.ProductTypeId.Equals(CartProductArgs.ProductTypeId))
                 .FirstOrDefault();
 
         if (cartItem == null)
@@ -52,10 +65,5 @@
         return true;
     }
 
-    private void ToggleButtonText()
-    {
-        bool productInCart = CheckProductInCart();
-
-        productAdded = productInCart;
-    }
+    private void ToggleButtonText() => productAdded = CheckProductInCart();
 }

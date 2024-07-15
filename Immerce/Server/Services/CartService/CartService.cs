@@ -1,5 +1,4 @@
 ﻿using Immerce.Server.Data;
-using Immerce.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace Immerce.Server.Services
@@ -48,7 +47,8 @@ namespace Immerce.Server.Services
                     ImageUrl = product.ImageUrl,
                     Price = productVariant.Price,
                     ProductType = productVariant.ProductType!.Name,
-                    ProductTypeId = productVariant.ProductTypeId
+                    ProductTypeId = productVariant.ProductTypeId,
+                    Quantity = cartItem.Quantity
                 };
             }
 

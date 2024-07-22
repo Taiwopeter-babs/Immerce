@@ -5,13 +5,15 @@
 
 
 
+
 @if (product == null)
 {
+    <PageTitle>Immerce Shop - Product</PageTitle>
     <p>@Message</p>
 }
 else
 {
-    @* <div id="product-title"><h3>@product.Title</h3></div> *@
+    <PageTitle>Immerce Shop - @product.Title</PageTitle>
 
   <div class="media">
 

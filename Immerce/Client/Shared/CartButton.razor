@@ -15,7 +15,6 @@
     [EditorRequired]
     public CartProductArgs CartProductArgs { get; set; } = new();
 
-
     [Parameter]
     [EditorRequired]
     public EventCallback<CartProductArgs> CartProductChanged { get; set; }
@@ -25,8 +24,6 @@
 
     [Parameter]
     public EventCallback<bool> VariantAddedChanged { get; set; }
-
-    private bool productAdded { get; set; } = false;
 
 
 

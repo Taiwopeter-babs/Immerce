@@ -113,7 +113,7 @@ namespace Immerce.Client.Services
         {
             List<CartItem>? cart = await CheckCart();
 
-            if (cart is null) 
+            if (cart is null || cart.Count == 0) 
                 return (null, null);
 
             CartItem? cartItem = cart.Find(c =>

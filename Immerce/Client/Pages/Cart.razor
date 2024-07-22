@@ -4,24 +4,6 @@
 
 
 
-<style>
-    .message {
-        max-width: 100%;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 2rem;
-        background: linear-gradient(225deg, #1D6C60, #246C82);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        color: transparent;
-    }
-</style>
-
-@* End Styles *@
-
 
 @* Title and Header *@
 <PageTitle>Immerce Shop - Your Cart</PageTitle>
@@ -45,13 +27,16 @@ else
                     <img src="@product.ImageUrl" alt="@product.Title" class="image" />
                 </div>
 
-                <div class="name">
-                    <h5><a href="/products/@product.ProductId">@product.Title</a></h5>
-                    <span>
-                        @(product.ProductType == "Default" ? "Type: None" : $"Type: {product.ProductType}")
-                    </span>
+                <div class="product-info">
+                    <div id="title-type">
+                        <h5><a href="/products/@product.ProductId">@product.Title</a></h5>
+                        <span id="product-type">
+                            Type:&nbsp;@(product.ProductType == "Default" ? "None" : product.ProductType)
+                        </span>
+                    </div>
                     &nbsp;
                     <div class="cart-quantity">
+                        <div class="cart-product-price main-price">$@(product.Price * product.Quantity)</div>
                         <div>
                             <button class="btn btn-danger"
                                     @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
@@ -61,18 +46,19 @@ else
                         <div class="quantity">
                             <input type="number" min="1" step="1"
                                    value="@product.Quantity"
-                                   @onchange="@((ChangeEventArgs e) => UpdateProductQuantity(e, product))" />
+                                   placeholder="Enter quantity"
+                                   @oninput="@((ChangeEventArgs e) => UpdateProductQuantity(e, product))" />
                         </div>
                     </div>
                     
                 </div>
 
-                <div class="cart-product-price">$@(product.Price * product.Quantity)</div>
+                
             </div>
         }
 
         <div class="cart-product-price total">
-            Total price of (@CartProducts.Count) items: $@CartProducts.Sum(pr => pr.Price * pr.Quantity)
+            Total: $@CartProducts.Sum(pr => pr.Price * pr.Quantity)
         </div>
     </div>
 }

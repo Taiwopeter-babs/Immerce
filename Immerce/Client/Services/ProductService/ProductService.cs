@@ -6,12 +6,11 @@ namespace Immerce.Client.Services
 {
     public class ProductService : IProductService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IProductApi _productApi;
 
-        public ProductService(HttpClient httpClient)
+        public ProductService(HttpClient httpClient, IProductApi productApi)
         {
-
-            _httpClient = httpClient;
+            _productApi = productApi;
             PageParameters = new PageParameters();
 
         }
@@ -36,20 +35,17 @@ namespace Immerce.Client.Services
 
         public async Task<ServiceResponse<Product?>> GetProduct(int id)
         {
-            string apiUrl = $"api/v1/products/{id}";
-
-            var response = await QueryGetAsync<ServiceResponse<Product?>>(apiUrl);
+            var response = await _productApi.GetProduct(id) ;
 
             return response;
         }
 
         public async Task GetProducts(string? categoryUrl = null)
         {
-            string apiUrl = categoryUrl == null
-                    ? "api/v1/products/featured"
-                    : $"api/v1/products/{categoryUrl}";
+            var response = categoryUrl is null
+                    ? await _productApi.GetFeaturedProducts()
+                    : await _productApi.GetProductsByCategory(categoryUrl);
 
-            var response = await QueryGetAsync<ServiceResponse<List<Product>>>(apiUrl);
 
             if (response != null && response.Data != null)
                 Products = response.Data;
@@ -63,46 +59,28 @@ namespace Immerce.Client.Services
 
         public async Task<List<string>?> GetProductsSuggestions(string? searchString = null)
         {
-            string apiUrl = $"api/v1/products/search/suggestions?searchString={searchString}";
+            ProductQueryParams queryParams = new()
+            {
+                SearchString = searchString
+            };
 
-            var response = await QueryGetAsync<ServiceResponse<List<string>>>(apiUrl);
+            var response = await _productApi.GetProductsSuggestions(queryParams);
 
             return response.Data;
         }
 
         public async Task SearchProducts(string? searchString)
         {
-            // This region is unimplemented
-            // but is useful for parsing page query parameters
-            #region GetQueryParams
-
-            ////Dictionary<string, string?> queryParams = new();
-
-            ////Type pageObject = PageParameters.GetType();
-
-            ////PropertyInfo[] props = pageObject.GetProperties();
-
-
-            ////foreach (var prop in props)
-            ////{
-            ////    if (prop.Name == "PageNumber")
-            ////    {
-            ////        queryParams.Add(prop.Name, prop.GetValue(pageObject)!.ToString());
-            ////        break;
-            ////    }   
-            ////}        
-
-            ////queryParams.Add("searchString", searchString);
-
-            #endregion
 
             PageParameters.LastSearchString = searchString;
 
-            string queryString = $"searchString={searchString}&page={PageParameters.Page}";
+            ProductQueryParams queryParams = new()
+            {
+                SearchString = searchString,
+                Page = PageParameters.Page
+            };
 
-            string apiUrl = $"api/v1/products/search?{queryString}";
-
-            var response = await QueryGetAsync<ServiceResponse<ProductSearchDto>>(apiUrl);
+            var response = await _productApi.SearchProducts(queryParams);
 
             if (response != null && response.Data != null)
             {
@@ -116,18 +94,6 @@ namespace Immerce.Client.Services
 
             /// Invoke event handler
             ProductsListUrlChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-
-        #region Private Methods
-
-        private async Task<T> QueryGetAsync<T>(string apiUrl)
-        {
-            var result = await _httpClient.GetFromJsonAsync<T>(apiUrl);
-
-            return result!;
         }
 
         #endregion

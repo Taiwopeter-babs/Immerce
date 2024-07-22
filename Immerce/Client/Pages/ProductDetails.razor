@@ -1,20 +1,23 @@
 ﻿@page "/products/{id:int}"
 @inject IProductService ProductService
 @inject ICartService CartService
+@inject ISyncLocalStorageService LocalStorage
+
 
 
 
 @if (product == null)
 {
+    <PageTitle>Immerce Shop - Product</PageTitle>
     <p>@Message</p>
 }
 else
 {
-  <h3>@product.Title</h3>
+    <PageTitle>Immerce Shop - @product.Title</PageTitle>
 
   <div class="media">
 
-      <div class="media-img-wrapper mr-2">
+      <div class="media-img-wrapper">
 
         <a href="@product.ImageUrl">
             <img class="media-img" src="@product.ImageUrl" alt="@product.Title" />
@@ -28,7 +31,7 @@ else
             <h3 class="mb-0">@product.Title</h3>
         </a>
 
-        <p class="description">@product.Description</p>
+            <p class="description"><b>@product.Description</b></p>
         
         @if (product.Variants != null && product.Variants.Count > 1)
         {
@@ -36,11 +39,13 @@ else
                 <label for="productVariant" class="form-label">Select product variant:</label>
                 <select
                     class="form-select form-select-sm mb-3"
-                    @bind="currentTypeId"
+                    @onchange="VariantChanged"
                 >
                     @foreach (var variant in product.Variants)
                     {
-                        <option value="@variant.ProductTypeId">@variant.ProductType?.Name</option>
+                            <option value="@variant.ProductTypeId">
+                                @variant.ProductType?.Name
+                            </option>
                     }
                 </select>
             </div>
@@ -57,10 +62,12 @@ else
             <h4 class="price">$@selectedVariant.Price</h4>
         }
 
-        <CartButton
-            CartProductArgs="@GetCartProductArgs()"
-            CartProductChanged="HandleCartProductChanged"
-        />
+        <div id="cart-button-container">
+                <CartButton CartProductArgs="@GetCartProductArgs()"
+                            CartProductChanged="HandleCartProductChanged" 
+                            @bind-VariantAdded="VariantAdded"
+                />
+        </div>
 
       </div>
 
@@ -81,11 +88,13 @@ else
 
     private string Message = string.Empty;
 
+    private bool VariantAdded = false;
+
     /// <summary>
     /// Default product type id. This determines which price is shown depending
     /// on the product variant.
     /// </summary>
-    private int currentTypeId = 1;
+    private int CurrentVariantId { get; set; } = 1;
 
     /// <summary>
     /// The selected variant in the dropdown menu. If there are no variants,
@@ -114,13 +123,27 @@ else
         if (variants!.Count > 0)
         {
             // pick the first product type as the selected
-            currentTypeId = variants[0].ProductTypeId;
+            CurrentVariantId = variants[0].ProductTypeId;
+        }
+
+        VariantAdded = CheckVariantInCart();
+    }
+
+    private void VariantChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            int.TryParse(e.Value.ToString(), out int result);
+
+            CurrentVariantId = result;
+
+            VariantAdded = CheckVariantInCart();
         }
     }
 
     private ProductVariant? GetSelectedVariant()
     {
-        return product?.Variants.FirstOrDefault(pv => pv.ProductTypeId == currentTypeId);
+        return product?.Variants.FirstOrDefault(pv => pv.ProductTypeId == CurrentVariantId);
     }
 
     /// <summary>
@@ -132,7 +155,7 @@ else
         CartItem cartItem = new()
             {
                 ProductId = args.ProductId,
-                ProductTypeId = currentTypeId
+                ProductTypeId = CurrentVariantId
             };
 
         await CartService.AddToCart(cartItem);
@@ -145,7 +168,25 @@ else
         return new CartProductArgs()
             {
                 ProductId = selectedVariant!.ProductId,
-                ProductTypeId = currentTypeId
+                ProductTypeId = CurrentVariantId
             };
+    }
+
+    private bool CheckVariantInCart()
+    {
+
+        List<CartItem>? cart = LocalStorage.GetItem<List<CartItem>>(CartService.CartName);
+
+        if (cart == null)
+            return false;
+
+
+        CartItem? cartItem = cart
+                .Where(item =>
+                    item.ProductId.Equals(product?.Id)
+                    && item.ProductTypeId.Equals(CurrentVariantId))
+                .FirstOrDefault();
+
+        return cartItem != null;
     }
 }

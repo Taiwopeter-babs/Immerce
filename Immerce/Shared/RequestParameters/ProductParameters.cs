@@ -4,4 +4,11 @@
     {
         public string? SearchString { get; set; } = string.Empty;
     }
+
+    public sealed class ProductQueryParams
+    {
+        public string? SearchString { get; set; }
+
+        public int Page { get; set; }
+    }
 }

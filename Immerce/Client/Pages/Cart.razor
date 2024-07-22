@@ -51,15 +51,20 @@ else
                         @(product.ProductType == "Default" ? "Type: None" : $"Type: {product.ProductType}")
                     </span>
                     &nbsp;
-                    <button class="btn btn-danger"
-                            @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
-                            <i class="bi bi-cart-plus"></i>&nbsp;Remove
-                    </button>
-                    <div class="quantity">
-                        <input type="number" min="1" step="1"
-                            value="@product.Quantity"
-                            @onchange="@((ChangeEventArgs e) => UpdateProductQuantity(e, product))" />
+                    <div class="cart-quantity">
+                        <div>
+                            <button class="btn btn-danger"
+                                    @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
+                                <i class="bi bi-cart-plus"></i>&nbsp;Remove
+                            </button>
+                        </div>
+                        <div class="quantity">
+                            <input type="number" min="1" step="1"
+                                   value="@product.Quantity"
+                                   @onchange="@((ChangeEventArgs e) => UpdateProductQuantity(e, product))" />
+                        </div>
                     </div>
+                    
                 </div>
 
                 <div class="cart-product-price">$@(product.Price * product.Quantity)</div>

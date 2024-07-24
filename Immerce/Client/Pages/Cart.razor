@@ -36,7 +36,9 @@ else
                     </div>
                     &nbsp;
                     <div class="cart-quantity">
-                        <div class="cart-product-price main-price">$@(product.Price * product.Quantity)</div>
+                        <div class="cart-product-price main-price">
+                            @GetFormattedCurrency((product.Price * product.Quantity))
+                        </div>
                         <div>
                             <button class="btn btn-danger"
                                     @onclick="@(() => RemoveFromCart(product.ProductId, product.ProductTypeId))">
@@ -58,7 +60,7 @@ else
         }
 
         <div class="cart-product-price total">
-            Total: $@CartProducts.Sum(pr => pr.Price * pr.Quantity)
+            Total: @GetFormattedCurrency(CartProducts.Sum(pr => pr.Price * pr.Quantity))
         </div>
     </div>
 }
@@ -81,28 +83,16 @@ else
 
     #region SearchTrigger Event
 
-    // public void Dispose()
-    // {
-    //     // remove event handler
-    //     ProductService.ProductsListUrlChanged -= HandleProductsChanged!;
-    // }
-
-    // /// <summary>
-    // /// Event handler for re-rendering ProductList component when search is activated
-    // /// </summary>
-    // /// <param name="sender"></param>
-    // /// <param name="e"></param>
-    // public async void HandleProductsChanged(object sender, EventArgs e)
-    // {
-    //     await InvokeAsync(() => StateHasChanged());
-    // }
+    
 
     #endregion
 
     private async Task RemoveFromCart(int productId, int productTypeId)
     {
         await CartService.RemoveCartItem(productId, productTypeId);
+
         ToastService.Notify(new(ToastType.Danger, "Product removed from cart"));
+
         await LoadCart();
     }
 
@@ -131,6 +121,13 @@ else
             await CartService.UpdateQuantity(product);
         }
 
+    }
+
+    private string GetFormattedCurrency(decimal value)
+    {
+        var cultureInfo = new CultureInfo("HA-LATN-NG");
+
+        return string.Format("{1} {0:N2}", value, cultureInfo.NumberFormat.CurrencySymbol);
     }
     #endregion
 

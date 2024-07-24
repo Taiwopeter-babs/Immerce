@@ -39,7 +39,7 @@ else
                 <label for="productVariant" class="form-label">Select product variant:</label>
                 <select
                     class="form-select form-select-sm mb-3"
-                    @onchange="VariantChanged"
+                    @onchange="HandleVariantChange"
                 >
                     @foreach (var variant in product.Variants)
                     {
@@ -59,7 +59,7 @@ else
             {
                 <h6 class="text-muted original-price">$@selectedVariant.OriginalPrice</h6>
             }
-            <h4 class="price">$@selectedVariant.Price</h4>
+            <h4 class="price">$@selectedVariant.Price.ToString("#,##0.00")</h4>
         }
 
         <div id="cart-button-container">
@@ -129,11 +129,16 @@ else
         VariantAdded = CheckVariantInCart();
     }
 
-    private void VariantChanged(ChangeEventArgs e)
+    private void HandleVariantChange(ChangeEventArgs e)
     {
         if (e.Value != null)
         {
-            int.TryParse(e.Value.ToString(), out int result);
+            bool isParsed = int.TryParse(e.Value.ToString(), out int result);
+
+            if (!isParsed)
+            {
+                ToastService.Notify(new(ToastType.Danger, "Invalid amount"));
+            }
 
             CurrentVariantId = result;
 

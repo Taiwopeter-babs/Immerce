@@ -14,7 +14,7 @@ else
     @foreach (Product product in ProductService.Products!)
     {
             <li class="media my-3 container" @key=@product.Id>
-                <ProductComponent product="@product" CartProductChanged="HandleCartProductChanged" />
+                <ProductComponent Product="product" CartProductChanged="HandleCartProductChanged" />
             </li>
     }
 </ul>
